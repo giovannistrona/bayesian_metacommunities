@@ -70,3 +70,19 @@ vignettes/*.pdf
 *.exe
 *.out
 *.app
+
+# Others 
+*~
+*.DS_Store
+*.aux
+*.log
+*.bbl
+*.blg
+*.synctex.gz
+.git-credentials
+data/summaries/
+data/results/
+data/species_input/
+data/landscapes/
+figures/
+code/package_requirements.R
