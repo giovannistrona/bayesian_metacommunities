@@ -11,9 +11,10 @@
 
 plot_patchloss <- function(data, webs, paramss, scenarioss, spfs, a, b, basals, ptitle, labnames){
 
-  data <- data %>% mutate(scenario=factor(scenario, 
-                          levels=c("best-case scenario", "worst-case scenario", "random scenario")))
-  
+  data <- data %>% filter(params %in% paramss) %>% 
+    mutate(scenario=factor(scenario, levels=c("best-case scenario", "worst-case scenario", "random scenario")),
+        params=factor(params,levels=c(paramss[4],paramss[1], paramss[2], paramss[3])))
+          
   ## Extract top species extinction:
   temp <- data %>% filter(web==webs, spf==spfs, scenario %in% scenarioss, params %in% paramss, alpha == a, beta == b) 
   topextinct <- temp %>% filter(species==topsp, lambda<1) %>%  ## NOTE: max(species) != topsp !!!

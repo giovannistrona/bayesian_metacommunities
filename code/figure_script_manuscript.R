@@ -123,7 +123,7 @@ for(infile in infiles){
       pweb <- unique(dat_plot$web) #web
       pscenarios <-  unique(dat_plot$scenario) #scenarios
       pspfs <- "basal" ## which focal species for patch loss
-      pbasals <- FALSE ## if TRUE basal s pecies are plotted if FALSE only consumers
+      pbasals <- FALSE ## if TRUE basal species are plotted if FALSE only consumer species
       
       #Metapopulation capacity ~ patches removed
       pparams <- unique(dat_plot$params)[c(3,6:8)] ## selected pi_i and xi_i combinations
@@ -153,7 +153,7 @@ for(infile in infiles){
 
 #Figure 4
 # #If not yet done, generate .png plots for the different consumer responses to resource loss (functional forms) 
-plot_functional_forms_all(figuredir) 
+# plot_functional_forms(figuredir) 
 
 infile <- "../data/summaries/summary_serengeti.rds" #summary file
 dat <- infile %>% read_rds %>% filter(spinput == "../data/species_input/serengeti_009.csv")
