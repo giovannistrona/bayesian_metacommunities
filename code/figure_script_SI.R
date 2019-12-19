@@ -48,6 +48,7 @@ expand.grid(s=seq(0, 1, l=20002), lMC=c(0.5, 1, 2, 3, 4)) %>%
   scale_colour_manual(values=dpalette, name=expression(paste(lambda[M[C]])))
 ## ggsave("../figures/C_persist.pdf", width=3, height=2.4)
 
+
 #Figure S2
 chain <- expand.grid(lambdaM=seq(0, 5, l=301), pi0=seq(0, 1, l=301)) %>%
   as_tibble %>%
@@ -69,6 +70,7 @@ ggplot(chain %>% mutate(TL=factor(TL))) +
   scale_fill_brewer(palette="PuBu", name="Trophic levels") +
   theme(panel.grid=element_blank())
 ## ggsave("../figures/TL_chain.pdf", width=4, height=2.7)
+
 
 #Figure S4 
 infiles <- "../data/summaries/summary_largewebs_*.rds" %>% Sys.glob() #summary files
@@ -111,7 +113,7 @@ for(infile in infiles){
       p <- plot_persistence(data = dat_plot, webs = pweb, paramss = pparams, scenarioss = pscenarios, spfs = pspfs,
                           a = pa, b = pb, basals = pbasals, ptitle=ptitles) 
       
-      #Add functional form 
+      #Add functional form inset
       g <- ggdraw(p) + draw_image(fform_png, x = 0.835, y = 1.01, hjust = 0, vjust = 1, width = 0.2, height = 0.2)
       g
       

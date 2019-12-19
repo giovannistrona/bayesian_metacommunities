@@ -9,18 +9,23 @@
 ## Ouput: - ggplot with number of patches removed on the x-axis and metapopulation capacity on the y-axis, 
 ##        - rows: habitat loss scenarios, cols: species input parameters (pi_i and xi_i). 
 
-plot_patchloss_groups <- function(data, webs, paramss, scenarioss, spfs, a, b, basals, ptitle){
+plot_patchloss_groups <- function(data, webs, paramss, scenarioss, spfs, a, b, basals){
   
   data <- data %>% 
-    mutate(scenario=factor(scenario, levels=c("best-case scenario", "worst-case scenario", "random scenario")))
+    mutate(scenario=factor(scenario, levels=c("best-case scenario", "worst-case scenario", "random scenario")), 
+            fform=case_when((alpha==1 & beta==1) == TRUE ~ "linear", 
+                            (alpha==5 & beta==5) == TRUE ~ "sigmoidal", 
+                            (alpha==1 & beta==5) == TRUE ~ "concave", 
+                            (alpha==5 & beta==1) == TRUE ~ "convex"), 
+            fform=factor(fform, levels=c("convex", "linear", "concave", "sigmoidal")))
   
   ## Extract top species extinction:
-  temp <- data %>% filter(web==webs, spf==spfs, scenario %in% scenarioss, params %in% paramss, alpha == a, beta == b) 
+  temp <- data %>% filter(web==webs, spf==spfs, scenario %in% scenarioss)
   topextinct <- temp %>% filter(species==topsp, lambda<1) %>%  ## NOTE: max(species) != topsp !!!
-    group_by(web, params, scenario) %>% 
-    summarise(minprem=min(prem)) %>% 
-    ungroup 
-  
+      group_by(web, fform, scenario) %>% 
+      summarise(minprem=min(prem)) %>% 
+      ungroup 
+
   ## Define theme and colour palette:
   theme_set(theme_bw()) ## set black and white theme
   colourCount <- data$group %>% unique %>% length
@@ -37,9 +42,10 @@ plot_patchloss_groups <- function(data, webs, paramss, scenarioss, spfs, a, b, b
   cpalette  <- c(browns, blues, greens)
   
   if(basals == FALSE) data <- data %>% filter(FT != "basal") 
-  
-  data %>% filter(web == webs, params %in% paramss, spf==spfs, alpha == a, beta == b, scenario %in% scenarioss) %>%
-    group_by(web, params, scenario, prem, group) %>%
+
+  # data %>% filter(web == webs, params %in% paramss, spf==spfs, alpha == a, beta == b, scenario %in% scenarioss) %>%
+  data %>% filter(web == webs, spf==spfs, scenario %in% scenarioss) %>%
+    group_by(web, fform, scenario, prem, group) %>%
     summarise(meanlambda=mean(lambda,na.rm=TRUE), sdlambda=sd(lambda, na.rm=TRUE)) %>% ungroup %>% 
     rename(`Patches removed`=prem) %>%
     ggplot() +
@@ -50,9 +56,8 @@ plot_patchloss_groups <- function(data, webs, paramss, scenarioss, spfs, a, b, b
     geom_vline(data = topextinct, aes(xintercept = minprem), linetype="dotdash", alpha=0.7) +
     geom_line(show.legend=FALSE) +
     geom_ribbon(aes(ymin=meanlambda-sdlambda, ymax=meanlambda+sdlambda),colour=NA, alpha=0.3) +
-    facet_grid(scenario~params, 
-                labeller=label_bquote(.(scenario), italic(pi[i])~"and"~italic(xi[i])~"SGB")) +
-    ggtitle(ptitle) +
+    facet_grid(scenario~fform, 
+              labeller=label_bquote(.(scenario), italic(pi[i])~"and"~italic(xi[i])~"SGB")) +
     guides(fill=guide_legend(title="Spatial groups", override.aes=list(size=5, alpha=1, fill=cpalette), reverse=FALSE)) +
     theme(text = element_text(size=15), axis.text.x = element_text(angle=75, hjust=1)) + 
     ylab("Metapopulation capacity") 

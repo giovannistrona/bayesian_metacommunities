@@ -17,8 +17,29 @@ if(file.exists(figuredir)){
   dir.create(file.path(figuredir)) #create direcotry for figures, if it does not exist yet
 } 
 
-
 #Figure 1
+chain <- expand.grid(lambdaM=seq(0, 5, l=301), pi0=seq(0, 1, l=301)) %>%
+  as_tibble %>%
+  filter(pi0!=0) %>%
+  mutate(lambda=lambdaM/log(1/(1-pi0)), TL=0)
+for (i in 1:nrow(chain)) {
+  if (chain$lambda[i]<1) next
+  while ((chain$lambda[i]>1)&(chain$TL[i]<8)) {
+    chain$lambda[i] <- chain$lambdaM[i]/(chain$lambdaM[i]/chain$lambda[i]-log(
+      (1-chain$pi0[i])*(1-1/chain$lambda[i])))
+    chain$TL[i] <- chain$TL[i] + 1
+  }
+}
+ggplot(chain %>% mutate(TL=factor(TL))) +
+  geom_raster(aes(x=pi0, y=lambdaM, fill=TL), interpolate=TRUE) +
+  scale_x_continuous(name=expression(paste(pi)), expand=c(0,0)) +
+  scale_y_continuous(name=expression(paste(lambda[M])), expand=c(0,0)) +
+  scale_colour_brewer(palette="PuBu") +
+  scale_fill_brewer(palette="PuBu", name="Trophic levels") +
+  theme(panel.grid=element_blank())
+## ggsave("../figures/TL_chain.pdf", width=4, height=2.7)
+
+#Figure 2
 getPalette  <- colorRampPalette(brewer.pal(11,"RdYlBu"))
 
 #Input file
@@ -70,8 +91,7 @@ plist[[2]] #B) worst-case scenario
 plist[[3]] #C) random scenario
 
 
-
-#Figure 2
+#Figure 3
 #Generate .png plots for the different consumer responses to resource loss (functional forms) 
 plot_functional_forms(figuredir) 
 
@@ -120,18 +140,21 @@ for(infile in infiles){
       p <- plot_patchloss(data = dat_plot, webs = pweb, paramss = pparams, scenarioss = pscenarios, spfs = pspfs,
                           a = pa, b = pb, basals = pbasals, ptitle=ptitles, labnames = var_names)
       
-      #Add functional form 
+      #Add functional form inset
       g <- ggdraw(p) + draw_image(fform_png, x = 0.835, y = 1.01, hjust = 0, vjust = 1, width = 0.2, height = 0.2)
       g
       
       #Save it
-      ggsave(filename = lambda, width=12, height=8, plot=g)
+      # ggsave(filename = lambda, width=12, height=8, plot=g)
     } 
   }
 }
 
 
-#Figure 3
+#Figure 4
+# #If not yet done, generate .png plots for the different consumer responses to resource loss (functional forms) 
+plot_functional_forms_all(figuredir) 
+
 infile <- "../data/summaries/summary_serengeti.rds" #summary file
 dat <- infile %>% read_rds %>% filter(spinput == "../data/species_input/serengeti_009.csv")
 
@@ -140,19 +163,18 @@ pbs <- unique(dat$beta)
 
 for(pa in pas){ #loop over functional forms
   for(pb in pbs){
-    
-    if(pa==5 && pb==1) ptitles="A"
-    if(pa==5 && pb==5) ptitles="B"
-    if(pa==1 && pb==1) ptitles="C"
-    if(pa==1 && pb==5) ptitles="D"
-    
-    fform_png <- paste0("/homes/jh57masa/github/bayesian_metacomm/figures/fform_",pa,"_",pb,".png")
-    
+  
     temp <- dat %>% filter(scenario == "pre-patch loss", alpha == pa, beta == pb) %>% mutate(scenario = "best-case scenario")
     temp2 <- dat %>% filter(scenario == "pre-patch loss", alpha == pa, beta == pb) %>% mutate(scenario = "worst-case scenario")
     temp3 <- dat %>% filter(scenario == "pre-patch loss", alpha == pa, beta == pb) %>% mutate(scenario = "random scenario")
-    dat_plot <- dat %>% bind_rows(temp) %>% bind_rows(temp2) %>% bind_rows(temp3)
-    
+  
+    temp4 <- dat %>% bind_rows(temp) %>% bind_rows(temp2) %>% bind_rows(temp3)
+    if(pa==1 && pb==1) dat_plot <- temp4
+      else dat_plot <- bind_rows(dat_plot, temp4)
+      }
+    }
+    dat_plot <- dat_plot %>% filter(scenario != "pre-patch loss")
+
     ## Define input
     pweb <- unique(dat_plot$web)
     pscenarios <- c("best-case scenario", "worst-case scenario", "random scenario")
@@ -164,17 +186,23 @@ for(pa in pas){ #loop over functional forms
 
     #Plot name  
     lambda <- paste0(figuredir, "lambda_", pweb %>% str_split(" ", simplify=TRUE) %>% as_tibble %>% 
-                       paste(.,collapse="_") %>% unname, "_", pspfs, "_", pa, "_", pb,"_SGB.pdf")
+                       paste(.,collapse="_") %>% unname, "_", pspfs, "_SGB.pdf")
     
     #Generate the plot
     p <- plot_patchloss_groups(data = dat_plot, webs = pweb, paramss = pparams, scenarioss = pscenarios, spfs = pspfs,
-                             a = pa, b = pb, basals = pbasals, ptitle = ptitles)
+                             a = pa, b = pb, basals = pbasals)
     
-    #Add functional form
-    g <- ggdraw(p) + draw_image(fform_png, x = 0.795, y = 1.01, hjust = 0, vjust = 1, width = 0.2, height = 0.2)
+    #Combine functional forms 
+    fforms <-  ggdraw() + draw_image(paste0(figuredir, "fform_5_1.png"), x = -0.36, y = 1.01, hjust = 0, vjust = 1, width = 1, height = 1) +
+               draw_image(paste0(figuredir, "fform_1_1.png"), x = -0.17, y = 1.01, hjust = 0, vjust = 1, width = 1, height = 1) + 
+               draw_image(paste0(figuredir, "fform_1_5.png"), x = 0.03, y = 1.01, hjust = 0, vjust = 1, width = 1, height = 1) +
+              draw_image(paste0(figuredir, "fform_5_5.png"), x = 0.22, y = 1.01, hjust = 0, vjust = 1, width = 1, height = 1)
+    
+    #Add them as insets
+    g <- plot_grid(fforms, p, nrow=2, rel_heights = c(0.8,3))
     g
     
     #Save it
-    # ggsave(filename = lambda, width=8, height=7, plot=g) 
-  }
-}
+    # ggsave(filename = lambda, width=11, height=8, plot=g) 
+
+

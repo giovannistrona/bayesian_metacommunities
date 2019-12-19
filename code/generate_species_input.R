@@ -105,8 +105,8 @@ serengeti_files <- Sys.glob(paste0(outputdir, "serengeti_*.csv"))
 groups <- read_csv("../data/serengeti/serengeti_groups.csv")
 
 for(serengeti_file in serengeti_files)
-  serengeti_file %>% read_csv %>% left_join(groups) %>% #add group as additional column
-    write_csv(serengeti_file)
+  serengeti_file %>% read_csv %>% left_join(groups) %>% #add group as additional column 
+    write_csv(serengeti_file) 
 
 dat <- read_csv(paste0(outputdir, "serengeti_006.csv")) ## 'pi' and 'xi' TLB
 for(sp in 1:length(dat$species)){
