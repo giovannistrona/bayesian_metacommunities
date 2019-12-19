@@ -57,5 +57,3 @@ plot_patchloss_groups <- function(data, webs, paramss, scenarioss, spfs, a, b, b
     theme(text = element_text(size=15), axis.text.x = element_text(angle=75, hjust=1)) + 
     ylab("Metapopulation capacity") 
 }
-
-

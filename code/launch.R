@@ -92,4 +92,3 @@ summaryfile <- "../data/summaries/summary.rds"
 
 summary <- generate_summary(resultfiles) #summarize simulation output
 summary %>% saveRDS(., summaryfile) #save summary in RDS format
-

@@ -114,4 +114,3 @@ for(sp in 1:length(dat$species)){
   dat$xi[sp] <- 0.055*(15-dat$group[sp])/mean(dat$group) #group based 'diserpersal distance 'xi'
 }
 dat %>% write_csv(paste0(outputdir, sprintf("serengeti_%03d.csv", n)))
-

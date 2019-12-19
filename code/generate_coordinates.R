@@ -6,5 +6,3 @@
 generate_coordinates <- function(N) {
   return(matrix(runif(N*2, 0, 1), nrow=N, ncol=2))
 }
-
-

@@ -24,5 +24,4 @@ make_edgelist <- function(webfile ){
 webs <- Sys.glob("../data/c_webs/*.csv") ## web files generated with C++
 outputdir <- Sys.glob("../data/webs/") ## output directory for edgelists 
 
-for(web in webs)
-  web %>% make_edgelist %>% write_csv(., paste0(outputdir, web %>% basename))
+for(web in webs) web %>% make_edgelist %>% write_csv(., paste0(outputdir, web %>% basename))

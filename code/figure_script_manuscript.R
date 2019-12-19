@@ -178,4 +178,3 @@ for(pa in pas){ #loop over functional forms
     # ggsave(filename = lambda, width=8, height=7, plot=g) 
   }
 }
-
