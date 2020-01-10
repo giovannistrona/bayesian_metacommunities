@@ -33,17 +33,13 @@ generate_summary <- function(infiles){
   }
   
   #Modify summary
-  out <- dat %>% mutate(topsp = case_when(
-    web == ("../data/webs/serengeti.csv") ~ read_csv("../data/webs/serengeti.csv") %>% 
+  out <- dat %>% mutate(
+    topsp = case_when(
+      web == ("../data/webs/serengeti.csv") ~ read_csv("../data/webs/serengeti.csv") %>% 
       create_adj_matrix %>% rownames %>% tail(n = 1),
-    numextract(web) %>% str_split("",simplify = TRUE) %>% length == 6 ~ read_csv("../data/webs/web100300.csv") %>% 
-      create_adj_matrix %>% rownames %>% tail(n = 1),
-    TRUE ~ read_csv("../data/webs/web1030.csv") %>% create_adj_matrix %>% rownames %>% tail(n = 1)),
+      numextract(web) %>% str_split("",simplify = TRUE) %>% length == 6 ~ read_csv("../data/webs/web100300.csv") %>% 
+      create_adj_matrix %>% rownames %>% tail(n = 1)),
     web = case_when(
-      numextract(web) == "1030" ~ "Model food web with 30 consumer and 10 basal species",
-      numextract(web) == "535" ~ "Model food web with 35 consumer and 5 basal species",
-      numextract(web) == "1525" ~ "Model food web with 25 consumer and 15 basal species",
-      numextract(web) == "2020" ~ "Model food web with 20 consumer and 20 basal species",
       numextract(web) == "100300" ~ "Model food web with 300 consumer and 100 basal species",
       numextract(web) == "50350" ~ "Model food web with 350 consumer and 50 basal species",
       numextract(web) == "150250" ~ "Model food web with 250 consumer and 150 basal species",

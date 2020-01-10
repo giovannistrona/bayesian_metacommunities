@@ -1,7 +1,7 @@
 #!/bin/bash
 ./make_webs.sh
 
-OUTDIR="../../data/webs/" ## ouput directory
+OUTDIR="../data/c_webs/" ## ouput directory
 
 mkdir -p $OUTDIR
 

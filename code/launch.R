@@ -24,8 +24,15 @@ for(k in 1:5){
     write_csv(sprintf("../data/landscapes/landscape_%03d.csv", k)) #save landscapes
 }
 
+##Generate or import food webs: 
+#Generate or import model/empirical webs. Web files must be in csv format, 
+#and their content must be in edgelist type with two columns: 'consumer' (column 1); 'resource' (column 2). 
+#We generated webs (adjacency matrices) in C++ based on the allometric trophic network model in 
+#Schneider et al. 2016 (c_code), and then we transformed the adj. matrices into edgelists. 
+# source("make_edgelist.R") #transform adj. matrices into edgelists
+
 ##Generate species input: 
-spinputdir <- "../data/specie_input/"
+spinputdir <- "../data/species_input/"
 if(file.exists(spinputdir)){
   print("Directory already exists.")
 }else{
@@ -87,8 +94,15 @@ if(file.exists(sumdir)){
   dir.create(file.path(sumdir)) #create direcotry for the summaries, if it does not exist yet
 } 
 
-resultfiles <- Sys.glob("../data/results/*.rds") #result files
-summaryfile <- "../data/summaries/summary.rds" 
+webs <- "../data/webs/*" %>% Sys.glob %>% basename %>% str_split(.,".csv", simplify=TRUE) %>%
+  as_tibble %>% pull(V1)
 
-summary <- generate_summary(resultfiles) #summarize simulation output
-summary %>% saveRDS(., summaryfile) #save summary in RDS format
+for(web in webs){ #generate one or multiple summary files 
+  resultfiles <- Sys.glob(paste0("../data/results/", web, "*.rds")) #result files
+  summaryfile <- paste0("../data/summaries/summary_", web, ".rds") 
+  #Note: Due to their size, we generated for the model food webs a separate summary file   
+  #for each functional form of a consumer's response to resource loss. 
+  summary <- generate_summary(resultfiles) #summarize simulation output
+  summary %>% saveRDS(., summaryfile) #save summary in RDS format
+}
+
