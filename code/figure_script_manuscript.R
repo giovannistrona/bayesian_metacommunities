@@ -95,7 +95,7 @@ plist[[3]] #C) random scenario
 #Generate .png plots for the different consumer responses to resource loss (functional forms) 
 plot_functional_forms(figuredir) 
 
-infiles <- "../data/summaries/summary_largewebs_*.rds" %>% Sys.glob() #summary files
+infiles <- "../data/summaries/summary_web*.rds" %>% Sys.glob() #summary files
 
 for(infile in infiles){
   dat <- infile %>% read_rds %>% filter(web == "Model food web with 300 consumer and 100 basal species") 
