@@ -94,8 +94,8 @@ if(file.exists(sumdir)){
   dir.create(file.path(sumdir)) #create direcotry for the summaries, if it does not exist yet
 } 
 
-webs <- "../data/webs/*" %>% Sys.glob %>% basename %>% str_split(.,".csv", simplify=TRUE) %>%
-  as_tibble %>% pull(V1)
+webs <- "../data/results/*" %>% Sys.glob %>% basename %>% str_split(.,"_", simplify=TRUE) %>%
+  as_tibble %>% pull(V1) %>% unique
 
 for(web in webs){ #generate one or multiple summary files 
   resultfiles <- Sys.glob(paste0("../data/results/", web, "*.rds")) #result files
