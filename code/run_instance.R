@@ -7,7 +7,9 @@ source("create_adj_matrix.R")
 source("get_feeding_type.R")
 source("generate_spdat.R")
 source("sim_metacomm.R")
-'%ni%' <- function(x,y)!('%in%'(x,y)) #helper function
+
+#Helper functions
+'%ni%' <- function(x,y)!('%in%'(x,y)) 
 
 ## Run simulations. 
 ## Input: - web: name of web file (w/ path & extension), 
@@ -35,17 +37,17 @@ run_instance <- function(web, landsc, spinput, spf, alpha, beta, seed, rem, nrep
   
   spdat0 <- generate_spdat(web, spinput, landsc) %>% ## combine species and landscape information
     add_column(delta=0, lambda=0, p=0.5, pvalues=0)
-  
+    
   spdat0 <- sim_metacomm(A, spdat0, nreps, alpha, beta) %>% ## simulate metacommunity
-      add_column(prem=0,
-                 web=web,
-                 spinput=spinput,
-                 landsc=landsc,
-                 spf=spf,
-                 seed=seed,
-                 alpha=alpha,
-                 beta=beta,
-                 scenario="all") 
+    add_column(prem=0,
+               web=web,
+               spinput=spinput,
+               landsc=landsc,
+               spf=spf,
+               seed=seed,
+               alpha=alpha,
+               beta=beta,
+               scenario="all") 
   
   spdat <- spdat0
   
@@ -58,7 +60,7 @@ run_instance <- function(web, landsc, spinput, spf, alpha, beta, seed, rem, nrep
   if ((all(spdat0 %>% filter(FT!="basal") %>% pull(lambda) %>% unique < 1)) || ## stop if no consumer can persist in the long-term
       (max(spdat0$p)<(1e-10)) || ## stop if persistence too low 
       ((spf!="basal") & (spdat0 %>% filter(species==rownames(A)[nrow(A)]) %>% pull(lambda) %>% unique<1))){ ## stop if top species is spf and extinct 
-      flag <- TRUE
+    flag <- TRUE
   }
   
   focal_sp <- ifelse(spf=="basal", rownames(A)[1], rownames(A)[nrow(A)]) ## name of focal species for patch removal 
@@ -104,12 +106,12 @@ run_instance <- function(web, landsc, spinput, spf, alpha, beta, seed, rem, nrep
         N0 <- length(unique(spdat1$patch)) ## number of patches in landscape
         if (N0<=rem0) rem0 <- 1
         if ((spf!="basal") & (spdat1 %>% filter(species==rownames(A)[nrow(A)]) %>% 
-                               pull(lambda) %>% unique<1)){ ## stop if top species is spf and extinct
-            crashed <- TRUE
+                              pull(lambda) %>% unique<1)){ ## stop if top species is spf and extinct
+          crashed <- TRUE
         } 
         if((all((spdat1 %>% filter(FT!="basal") %>% pull(lambda) %>% unique)<1)) || ## stop if metapopulation capacity for all consumer species is below 1; 
-            (max(spdat1$p)<=(1e-10)) || ## stop if overall persistence is too low; 
-            (N0<=2)) {  ## or two or less patches remain in the landscape
+           (max(spdat1$p)<=(1e-10)) || ## stop if overall persistence is too low; 
+           (N0<=2)) {  ## or two or less patches remain in the landscape
           crashed <- TRUE
         }
       }
@@ -117,3 +119,4 @@ run_instance <- function(web, landsc, spinput, spf, alpha, beta, seed, rem, nrep
   }
   return(spdat)
 }
+

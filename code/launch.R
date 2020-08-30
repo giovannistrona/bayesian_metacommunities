@@ -1,11 +1,12 @@
 rm(list=ls())
 
 #Load packages
-require(NetIndices) #estimate network indices  
-require(igraph) #network analysis 
-require(tidyverse) #data handling 
+require(NetIndices, quietly=TRUE) #estimate network indices  
+require(igraph, quietly=TRUE) #network analysis 
+require(tidyverse, quietly=TRUE) #data handling 
+require(Rcpp, quietly=TRUE) #interfacing with C++
 
-##Generate random landscapes: 
+##If needed, generate random landscapes: 
 #Load R functions 
 source("generate_coordinates.R")
 N <- 300 #number of patches
@@ -18,11 +19,12 @@ if(file.exists(landscapedir)){
   dir.create(file.path(landscapedir)) #create direcotry for landscape files, if it does not exist yet
 } 
 
-for(k in 1:5){
-  set.seed(seed*k) 
-  landscape <- generate_coordinates(N) %>% as_tibble %>% rename(x=V1, y=V2) %>% #generate and
-    write_csv(sprintf("../data/landscapes/landscape_%03d.csv", k)) #save landscapes
-}
+#Generate landscapes:
+# for(k in 1:5){
+#   set.seed(seed*k) 
+#   landscape <- generate_coordinates(N) %>% as_tibble %>% rename(x=V1, y=V2) %>% #generate and
+#     write_csv(sprintf("../data/landscapes/landscape_%03d.csv", k)) #save landscapes
+# }
 
 ##Generate or import food webs: 
 #Generate or import model/empirical webs. Web files must be in csv format, 
@@ -31,19 +33,20 @@ for(k in 1:5){
 #Schneider et al. 2016 (c_code), and then we transformed the adj. matrices into edgelists. 
 # source("make_edgelist.R") #transform adj. matrices into edgelists
 
-##Generate species input: 
+##If needed, generate species input: 
 spinputdir <- "../data/species_input/"
 if(file.exists(spinputdir)){
   print("Directory already exists.")
 }else{
   dir.create(file.path(spinputdir)) #create direcotry for species input files, if it does not exist yet
 } 
+
 #Source R script
 source("generate_species_input.R") 
 
 ##Set up the simulations: 
 #Simulation input 
-landscs <- Sys.glob("../data/landscapes/landscape_*.csv") #landscapes
+landscs <- Sys.glob("../data/landscapes/*.csv") #landscapes
 spinputs <- Sys.glob("../data/species_input/*.csv") #species input files
 
 #Simulation options
@@ -94,8 +97,8 @@ if(file.exists(sumdir)){
   dir.create(file.path(sumdir)) #create direcotry for the summaries, if it does not exist yet
 } 
 
-webs <- "../data/results/*" %>% Sys.glob %>% basename %>% str_split(.,"_", simplify=TRUE) %>%
-  as_tibble %>% pull(V1) %>% unique
+webs <- "../data/webs/*" %>% Sys.glob %>% basename %>% str_split(.,".csv", simplify=TRUE) %>%
+  as_tibble %>% pull(V1)
 
 for(web in webs){ #generate one or multiple summary files 
   resultfiles <- Sys.glob(paste0("../data/results/", web, "*.rds")) #result files
@@ -105,4 +108,6 @@ for(web in webs){ #generate one or multiple summary files
   summary <- generate_summary(resultfiles) #summarize simulation output
   summary %>% saveRDS(., summaryfile) #save summary in RDS format
 }
+
+
 
