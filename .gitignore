@@ -82,6 +82,7 @@ vignettes/*.pdf
 .git-credentials
 data/summaries/
 data/results/
+figures/
 
 .git-credentials
 data/species_input/
