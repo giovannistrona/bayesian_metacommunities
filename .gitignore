@@ -82,6 +82,8 @@ vignettes/*.pdf
 .git-credentials
 data/summaries/
 data/results/
+
+.git-credentials
 data/species_input/
 data/landscapes/
 figures/
