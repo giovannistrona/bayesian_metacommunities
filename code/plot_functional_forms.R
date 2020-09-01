@@ -1,5 +1,5 @@
-
-library(tidyverse)
+#Load libraries
+library(tidyverse, quietly=TRUE)
 
 ggplot_fform <- function(alpha, beta)
 {

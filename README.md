@@ -7,7 +7,7 @@ The directory "c_code" contains the code in C++ and Bash needed to generate the 
 * Installation of C++
 * The gsl library
 
-The directory "code" contains all the source code in R anc C++ needed to replicate the results in the manuscript. 
+The directory "code" contains all the source code in R and C++ needed to replicate the results in the manuscript. 
 To run the simulations, run the "launch.R" file. This will create all necessary data and run all additional code automatically. Among others, it calls the function "run_instance.R" in which all the magic happens. Successfully running this file requires:
 
 * An installation of R (version 3.0 or higher should work)
