@@ -42,7 +42,7 @@ if(file.exists(spinputdir)){
 } 
 
 #Source R script
-source("generate_species_input.R") 
+# source("generate_species_input.R") 
 
 ##Set up the simulations: 
 #Simulation input 
@@ -88,8 +88,10 @@ for(r in 1:nrow(tab)){
 }
 
 ##Summarize simulation output: 
-#Output directory for summaries
-sumdir <- "../data/summaries/" 
+#Load R function
+source("generate_summary.R")
+
+sumdir <- "../data/summaries/"  #Output directory for summaries
 
 if(file.exists(sumdir)){
   print("Directory already exists.")
@@ -101,7 +103,7 @@ webs <- "../data/webs/*" %>% Sys.glob %>% basename %>% str_split(.,".csv", simpl
   as_tibble %>% pull(V1)
 
 for(web in webs){ #generate one or multiple summary files 
-  resultfiles <- Sys.glob(paste0("../data/results/", web, "*.rds")) #result files
+  resultfiles <- paste0("../data/results/", web,"*.rds") %>% Sys.glob() #result files
   summaryfile <- paste0("../data/summaries/summary_", web, ".rds") 
   #Note: Due to their size, we generated for the model food webs a separate summary file   
   #for each functional form of a consumer's response to resource loss. 
