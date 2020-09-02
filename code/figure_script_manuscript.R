@@ -157,7 +157,7 @@ for(infile in infiles){
 #patch removal based on basal species (ACASEN	Acacia senegal, sole member of SG 12):
 infile <- "../data/summaries/summary_serengeti.rds" #summary file
 #patch removal based on antoher basal species (BOSAUG Boscia augustifolia, SG 14):
-# infile <- "../data/summaries/summary_serengeti_BOSAUG.rds" #summary file
+# infile <- "../data/summaries/summary_serengeti_BOSAUG.rds" #summary file (SI, Figure S13)
 dat <- infile %>% read_rds %>% filter(spinput == "../data/species_input/serengeti_009.csv")
 
 pas <- unique(dat$alpha) 
