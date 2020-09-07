@@ -34,14 +34,13 @@ To run the simulations, run the "launch.R" file. This will create all necessary 
 
 To generate the corresponding figure in the SI (Fig. S18), use the file "figure_script_linkrem.R". 
 
-The file "code/analyze_gridlike.R" contains all the source code in R needed to replicate the results in the SI, S10. 
-To run the simulations, run the "launch.R" file. This will create all necessary data and run all additional code automatically. Among others, it calls the function "run_instance.R" in which all the magic happens. Successfully running this file requires:
+The file "code/launch_gridlike.R" contains all the source code in R needed to replicate the results in the SI, S10. N
+To run the simulations, run the "launch_gridlike.R" file. This will create all necessary data and run all additional code automatically. Among others, it calls the function "run_instance.R" in which all the magic happens. Successfully running this file requires:
 
 * An installation of R (version 3.0 or higher should work)
 * Four additional R packages (igraph; NetIndices; Rcpp; tidyverse)
 
 To generate the corresponding figure in the SI (Fig. S19), use the file "analyze_gridlike.R". 
-
 
 All included code is covered under the GPL, version 3, available here: (http://www.gnu.org/licenses/gpl-3.0.en.html).
 
