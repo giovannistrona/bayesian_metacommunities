@@ -83,7 +83,6 @@ vignettes/*.pdf
 data/summaries/
 data/results/
 data/species_input/
-data/landscapes/
 figures/
 code/package_requirements.R
 
